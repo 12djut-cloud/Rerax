@@ -9,6 +9,35 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Create app icon
+        run: |
+          mkdir -p Rerax/Assets.xcassets/AppIcon.appiconset
+          python3 - <<'PY'
+          import zlib, struct, math
+          S = 1024
+          bg = (31, 122, 106)
+          fg = (255, 255, 255)
+          def seg(px, py, ax, ay, bx, by):
+              dx, dy = bx - ax, by - ay
+              t = max(0, min(1, ((px - ax) * dx + (py - ay) * dy) / (dx * dx + dy * dy)))
+              return math.hypot(px - ax - t * dx, py - ay - t * dy)
+          rows = []
+          for y in range(S):
+              row = bytearray([0])
+              for x in range(S):
+                  r = math.hypot(x - 512, y - 512)
+                  on = abs(r - 280) <= 28 or seg(x, y, 370, 520, 470, 620) <= 32 or seg(x, y, 470, 620, 660, 410) <= 32
+                  row += bytes(fg if on else bg)
+              rows.append(bytes(row))
+          raw = b"".join(rows)
+          def chunk(t, d):
+              c = struct.pack(">I", len(d)) + t + d
+              return c + struct.pack(">I", zlib.crc32(t + d) & 0xffffffff)
+          png = b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", S, S, 8, 2, 0, 0, 0)) + chunk(b"IDAT", zlib.compress(raw, 9)) + chunk(b"IEND", b"")
+          open("Rerax/Assets.xcassets/AppIcon.appiconset/icon.png", "wb").write(png)
+          PY
+          echo '{"info":{"author":"xcode","version":1}}' > Rerax/Assets.xcassets/Contents.json
+          echo '{"images":[{"filename":"icon.png","idiom":"universal","platform":"ios","size":"1024x1024"}],"info":{"author":"xcode","version":1}}' > Rerax/Assets.xcassets/AppIcon.appiconset/Contents.json
       - name: Install XcodeGen
         run: brew install xcodegen
       - name: Generate Xcode project
@@ -18,6 +47,7 @@ jobs:
           xcodebuild -project Rerax.xcodeproj -scheme Rerax \
             -configuration Release -sdk iphoneos \
             -derivedDataPath build \
+            ASSETCATALOG_COMPILER_APPICON_NAME=AppIcon \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
             build
       - name: Package IPA
@@ -29,3 +59,4 @@ jobs:
         with:
           name: Rerax-ipa
           path: Rerax.ipa
+
