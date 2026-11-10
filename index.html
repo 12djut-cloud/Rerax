@@ -43,7 +43,7 @@ h1 span{display:block;color:var(--accent)}
   background:var(--accent);color:var(--accent-ink);transition:transform .15s}
 .btn:active{transform:scale(.97)}
 .btn svg{width:20px;height:20px}
-.btn.off{background:transparent;color:var(--muted);border:1px solid var(--line);cursor:default}
+.btn.alt{background:transparent;color:var(--accent);box-shadow:inset 0 0 0 2px var(--accent)}
 .btn:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 .meta{margin-top:14px;color:var(--muted);font-size:14px}
 #toast{height:22px;margin-top:8px;color:var(--accent);font-size:15px;font-weight:600}
@@ -79,6 +79,7 @@ h2{margin:0 0 28px;font-size:clamp(28px,5vw,38px);letter-spacing:-.025em}
 .feat h3{margin:0 0 6px;font-size:19px}
 .feat p{margin:0;color:var(--muted)}
 .feat svg{width:30px;height:30px;stroke:var(--accent);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;margin-bottom:12px}
+.who{margin:26px 0 12px;font-weight:700;color:var(--accent)}
 .steps{list-style:none;margin:0;padding:0;display:grid;gap:14px;counter-reset:s}
 .steps li{counter-increment:s;display:flex;gap:16px;align-items:flex-start}
 .steps li::before{content:counter(s);flex:none;width:34px;height:34px;border-radius:50%;
@@ -107,10 +108,13 @@ footer{padding:36px 0 48px;color:var(--muted);font-size:14px;border-top:1px soli
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0l-4.5-4.5M12 15l4.5-4.5M5 20h14"/></svg>
           Rerax laden
         </a>
-        <span class="btn off" aria-disabled="true">Android – bald</span>
+        <a class="btn alt" id="dla" href="Rerax.apk" download="Rerax.apk">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0l-4.5-4.5M12 15l4.5-4.5M5 20h14"/></svg>
+          Android laden
+        </a>
       </div>
       <div id="toast" role="status" aria-live="polite"></div>
-      <p class="meta">Für iPhone · Version 1.0 · 78 KB · Datei .ipa</p>
+      <p class="meta">Version 1.0 · iPhone: .ipa, 78 KB · Android: .apk, 7,5 MB</p>
     </div>
 
     <div class="stage">
@@ -137,14 +141,22 @@ footer{padding:36px 0 48px;color:var(--muted);font-size:14px;border-top:1px soli
   </section>
 
   <section>
-    <h2>Installieren in 4 Schritten</h2>
+    <h2>Installieren</h2>
+    <p class="who">iPhone</p>
     <ol class="steps">
       <li><div><b>Datei laden</b><span>Tippe oben auf „Rerax laden“. Die Datei Rerax.ipa landet in deinen Downloads.</span></div></li>
       <li><div><b>Mit ESign öffnen</b><span>Alternativ gehen AltStore oder Sideloadly. Wähle die Datei und teile sie dorthin.</span></div></li>
       <li><div><b>Signieren</b><span>Nutze dein eigenes Zertifikat oder deine Apple-ID.</span></div></li>
       <li><div><b>Installieren</b><span>Danach liegt Rerax auf deinem Home-Bildschirm.</span></div></li>
     </ol>
-    <p class="note">Die App ist nicht signiert und nicht im App Store. Ohne Signieren lässt sie sich auf dem iPhone nicht installieren. Lade Apps immer nur aus Quellen, denen du vertraust.</p>
+    <p class="who">Android</p>
+    <ol class="steps">
+      <li><div><b>Datei laden</b><span>Tippe oben auf „Android laden“. Die Datei Rerax.apk landet in deinen Downloads.</span></div></li>
+      <li><div><b>Datei öffnen</b><span>Tippe in der Benachrichtigung oder in der Dateien-App auf Rerax.apk.</span></div></li>
+      <li><div><b>Installation erlauben</b><span>Android fragt einmal, ob dein Browser Apps installieren darf. Tippe auf Einstellungen und erlaube es.</span></div></li>
+      <li><div><b>Installieren</b><span>Tippe auf Installieren. Falls Play Protect warnt, wähle „Trotzdem installieren“.</span></div></li>
+    </ol>
+    <p class="note">Rerax ist nicht im App Store und nicht bei Google Play. Auf dem iPhone muss die App vor der Installation signiert werden. Lade Apps immer nur aus Quellen, denen du vertraust.</p>
   </section>
 
   <footer>Rerax · Deine Daten bleiben auf deinem Gerät.</footer>
@@ -168,10 +180,12 @@ footer{padding:36px 0 48px;color:var(--muted);font-size:14px;border-top:1px soli
   });
   draw();
 
-  document.getElementById("dl").addEventListener("click",function(){
-    var t=document.getElementById("toast");
-    t.textContent="Download startet …";
-    setTimeout(function(){t.textContent="";},4000);
+  ["dl","dla"].forEach(function(id){
+    document.getElementById(id).addEventListener("click",function(){
+      var t=document.getElementById("toast");
+      t.textContent="Download startet …";
+      setTimeout(function(){t.textContent="";},4000);
+    });
   });
 })();
 </script>
